@@ -536,11 +536,8 @@ int mosquitto_auth_unpwd_check(void *userdata, const char *username, const char 
 	}
 #endif
 
-#if MOSQ_AUTH_PLUGIN_VERSION>=4
-	granted = auth_cache_q(username, password, user_data);
-#else
-	granted = auth_cache_q(username, password, userdata);
-#endif
+	granted = auth_cache_q(username, password, ud);
+
 	if (granted != MOSQ_ERR_UNKNOWN) {
 		_log(LOG_DEBUG, "getuser(%s) CACHEDAUTH: %d",
 			username, (granted == MOSQ_ERR_SUCCESS) ? TRUE : FALSE);
@@ -602,11 +599,9 @@ int mosquitto_auth_unpwd_check(void *userdata, const char *username, const char 
 			username);
 		granted = MOSQ_ERR_UNKNOWN;
 	}
-#if MOSQ_AUTH_PLUGIN_VERSION >= 4
-	auth_cache(username, password, granted, user_data);
-#else
-	auth_cache(username, password, granted, userdata);
-#endif
+
+	auth_cache(username, password, granted, ud);
+	
 	return granted;
 }
 
@@ -677,11 +672,8 @@ int mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *u
 		topic ? topic : "NULL",
 		access == MOSQ_ACL_READ ? "MOSQ_ACL_READ" : "MOSQ_ACL_WRITE" );
 
-#if MOSQ_AUTH_PLUGIN_VERSION >= 4
-	granted = acl_cache_q(clientid, username, topic, access, user_data);
-#else
-	granted = acl_cache_q(clientid, username, topic, access, userdata);
-#endif
+	granted = acl_cache_q(clientid, username, topic, access, ud);
+
 	if (granted != MOSQ_ERR_UNKNOWN) {
 		_log(LOG_DEBUG, "aclcheck(%s, %s, %d) CACHEDAUTH: %d",
 			username, topic, access, granted);
@@ -763,11 +755,9 @@ int mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *u
 			username, topic, access);
 		granted = MOSQ_ERR_UNKNOWN;
 	}
-#if MOSQ_AUTH_PLUGIN_VERSION >= 4
-	acl_cache(clientid, username, topic, access, granted, user_data);
-#else
-	acl_cache(clientid, username, topic, access, granted, userdata);
-#endif
+
+	acl_cache(clientid, username, topic, access, granted, ud);
+	
 	return (granted);
 
 }
